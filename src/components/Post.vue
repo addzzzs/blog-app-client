@@ -26,7 +26,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="card shadow border-primary mb-3">
+  <div class="card shadow border-primary mb-3 text-decoration-none">
     <div
       class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
     >
@@ -39,40 +39,54 @@ onBeforeMount(() => {
       <small>{{ new Date(post.creationDate).toLocaleDateString() }}</small>
     </div>
 
-    <div class="card-body">
-      <h5 class="card-title">{{ post.title }}</h5>
-      <p class="card-text text-truncate">{{ post.content }}</p>
+    <div class="card-body text-decoration-none">
+      <router-link :to="`/viewPost/${post._id}`" class="text-decoration-none"
+        ><h5 class="card-title">{{ post.title }}</h5>
+        <p class="card-text text-truncate">{{ post.content }}</p></router-link
+      >
 
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <span class="text-muted small">
+        <router-link
+          :to="`/viewPost/${post._id}`"
+          class="text-muted small text-decoration-none"
+        >
           <i class="bi bi-chat-left-text me-1"></i
           >{{ post.comments?.length || 0 }} comments
-        </span>
+        </router-link>
 
-        <div class="d-flex gap-2">
-          <router-link
-            :to="`/viewPost/${post._id}`"
-            class="btn btn-sm btn-outline-primary"
-            @click="emit('view', post._id)"
-          >
-            <i class="bi bi-eye"></i> View
-          </router-link>
+        <div
+          class="dropdown shadow rounded-lg rounded"
+          v-if="user.id == post.author"
+        >
           <button
-            v-if="user.id == post.author"
-            class="btn btn-sm btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#addModal"
-            @click="emit('edit', post)"
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            <i class="bi bi-pencil"></i> Edit
+            . . .
           </button>
-          <button
-            v-if="user.isAdmin || user.id == post.author"
-            class="btn btn-sm btn-danger"
-            @click="emit('delete', post._id)"
-          >
-            <i class="bi bi-trash"></i> Delete
-          </button>
+          <ul class="dropdown-menu p-0">
+            <li>
+              <button
+                class="btn btn-sm btn-outline-primary h-100 w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#addModal"
+                @click="emit('edit', post)"
+              >
+                <i class="bi bi-pencil"></i> <span class="ms-1">Edit</span>
+              </button>
+            </li>
+            <li>
+              <button
+                v-if="user.isAdmin || user.id == post.author"
+                class="btn btn-sm btn-outline-danger h-100 w-100"
+                @click="emit('delete', post._id)"
+              >
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
